@@ -43,6 +43,7 @@ NPanel 用来集中管理节点、分组和订阅分发，并提供适合 `v2ray
 
 - [`README.md`](README.md)：项目总览与快速开始
 - [`DEPLOY_GITHUB_CLOUDFLARE.md`](DEPLOY_GITHUB_CLOUDFLARE.md)：部署流程
+- [`CHANGELOG.md`](CHANGELOG.md)：版本与更新记录
 - [`MAINTENANCE.md`](MAINTENANCE.md)：后期维护
 - [`FAQ.md`](FAQ.md)：常见问题
 - [`PUSH_CHECKLIST.md`](PUSH_CHECKLIST.md)：发布前检查清单
@@ -107,6 +108,7 @@ change-me
 ## 文档入口
 
 - 部署流程：[DEPLOY_GITHUB_CLOUDFLARE.md](DEPLOY_GITHUB_CLOUDFLARE.md)
+- 更新日志：[CHANGELOG.md](CHANGELOG.md)
 - 常用备忘：[QUICK_WORKFLOW.md](QUICK_WORKFLOW.md)
 - 后期维护：[MAINTENANCE.md](MAINTENANCE.md)
 - 常见问题：[FAQ.md](FAQ.md)
