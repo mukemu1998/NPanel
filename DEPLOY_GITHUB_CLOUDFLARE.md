@@ -1,12 +1,10 @@
-# Deploy with GitHub + Cloudflare
+# GitHub + Cloudflare 部署流程
 
-GitHub-connected deployment guide for NPanel.
+本文适用于将 NPanel 放在 GitHub 仓库中，并通过 Cloudflare Workers 进行自动部署。
 
-NPanel 的 GitHub + Cloudflare 自动部署流程。
+## 1. 准备仓库文件
 
-## 1. Prepare the repository | 准备仓库
-
-Commit these files:
+建议提交这些内容：
 
 - `src/`
 - `public/`
@@ -18,148 +16,125 @@ Commit these files:
 - `wrangler.jsonc`
 - `wrangler.local.jsonc`
 - `.dev.vars.example`
-- documentation files
+- 项目说明文档
 
-Do not commit these files:
+不要提交这些内容：
 
 - `node_modules/`
 - `.wrangler/`
 - `.dev.vars`
 - `.env`
-- local logs
+- 本地日志文件
 
-提交这些文件，忽略本地依赖、私密环境变量和日志文件。
-
-## 2. Create D1 | 创建 D1
+## 2. 创建 D1 数据库
 
 ```bash
 wrangler d1 create npanel
 ```
 
-Save:
+创建完成后，记录返回结果中的：
 
 - `database_id`
-- `preview_database_id` if you want a preview binding
+- `preview_database_id`（如果需要预览环境）
 
-记录 Cloudflare 返回的数据库 ID，后面要填回配置文件。
+## 3. 修改 Wrangler 配置
 
-## 3. Update Wrangler config | 修改 Wrangler 配置
-
-Open `wrangler.jsonc` and replace:
+打开 `wrangler.jsonc`，把下面的占位值替换成自己的真实 D1 数据库 ID：
 
 ```jsonc
 "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
 ```
 
-with your real D1 database id.
-
-把占位值替换成自己的真实 D1 ID。
-
-## 4. Initialize remote schema | 初始化远程表结构
+## 4. 初始化远程数据库结构
 
 ```bash
 npm run db:remote:init
 ```
 
-This creates the required tables in remote D1.
+这一步会在远程 D1 中创建面板运行所需的数据表。
 
-这一步会在远程 D1 中创建面板所需表结构。
-
-## 5. Configure secrets | 配置密钥
+## 5. 配置密钥
 
 ```bash
 wrangler secret put ADMIN_PASSWORD
 wrangler secret put SESSION_SECRET
 ```
 
-Requirements:
-
-- `ADMIN_PASSWORD`: real admin password
-- `SESSION_SECRET`: long random string
-
-要求：
+建议规则：
 
 - `ADMIN_PASSWORD` 使用真实后台密码
 - `SESSION_SECRET` 使用足够长的随机字符串
 
-## 6. Push to GitHub | 推送到 GitHub
+## 6. 推送到 GitHub
 
-Example:
+首次推送示例：
 
 ```bash
 git init
 git add .
-git commit -m "init tz panel"
+git commit -m "init npanel"
 git branch -M main
 git remote add origin https://github.com/your-account/NPanel.git
 git push -u origin main
 ```
 
-把远程仓库地址替换成自己的 GitHub 仓库地址即可。
+把仓库地址替换成自己的 GitHub 仓库地址即可。
 
-## 7. Connect the repo in Cloudflare | 在 Cloudflare 连接仓库
+## 7. 在 Cloudflare 连接仓库
 
-Path:
+操作路径：
 
-1. Open `Workers & Pages`
-2. Click `Create application`
-3. Choose `Import a repository`
-4. Connect GitHub
-5. Select the target repository
+1. 打开 `Workers & Pages`
+2. 点击 `Create application`
+3. 选择 `Import a repository`
+4. 连接 GitHub
+5. 选择目标仓库
 
-路径如上，连接 GitHub 后选择目标仓库即可。
+## 8. 构建设置
 
-## 8. Build settings | 构建设置
+推荐配置如下：
 
-Recommended values:
+- `Production branch`：`main`
+- `Root directory`：留空
+- `Build command`：留空
+- `Deploy command`：`npm run deploy`
 
-- `Production branch`: `main`
-- `Root directory`: leave empty
-- `Build command`: leave empty
-- `Deploy command`: `npm run deploy`
+本项目不需要额外的前端打包步骤，直接从仓库根目录部署即可。
 
-推荐保持根目录部署，不额外添加构建命令。
+## 9. 可选演示数据
 
-## 9. Optional demo seed | 可选演示数据
-
-Only run this when you intentionally want demo content:
+只有在明确需要写入演示数据时才执行：
 
 ```bash
 npm run db:remote:seed:demo -- --confirm-remote-demo-seed
 ```
 
-Why it is guarded:
+之所以需要额外确认，是因为这一步会覆盖演示相关数据，而且不属于正常生产部署流程。
 
-- it overwrites demo-related rows
-- it is not part of the normal production path
-- it requires an explicit confirmation flag
+## 10. 自定义域名边界
 
-只有明确要写入演示数据时才执行，这不是正常生产部署步骤。
+适合放在 Cloudflare 后面的内容：
 
-## 10. Custom domain boundary | 自定义域名边界
+- 面板网页
+- 管理 API
+- 订阅分发入口
 
-Good behind Cloudflare:
+不建议放在 Cloudflare 橙云后面的内容：
 
-- panel UI
-- admin API
-- subscription delivery
+- 真实代理节点域名
+- 中转入口域名
+- 客户端实际连接的代理 IP
 
-Do not orange-cloud these:
+也就是说，Cloudflare 只承载“管理和分发”，不承载真实代理流量。
 
-- real proxy node domains
-- relay entry domains
-- actual client-facing proxy IPs
+## 11. 上线检查
 
-适合放在 Cloudflare 后面的只有面板网页、管理 API 和订阅分发；真实代理流量入口不要放在 Cloudflare 橙云后面。
+建议按下面顺序检查：
 
-## 11. Final verification | 上线检查
-
-1. Open the panel homepage
-2. Log in successfully
-3. Check `/api/health`
-4. Create a test node
-5. Create a test group
-6. Open a subscription URL
-7. Import the subscription in a client
-
-按上面的顺序做一轮联通性和功能验证即可。
+1. 打开面板首页
+2. 确认可以正常登录
+3. 检查 `/api/health`
+4. 新建测试节点
+5. 新建测试分组
+6. 打开订阅链接
+7. 使用客户端导入订阅验证
