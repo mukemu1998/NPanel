@@ -2,7 +2,7 @@ const THEME_STORAGE_KEY = "npanel-theme-v1";
 
 const PANEL_CONFIG = {
 	brand: "NPanel",
-	...(window.NPANEL_CONFIG || window.TZ_PANEL_CONFIG || {}),
+	...(window.NPANEL_CONFIG || {}),
 };
 
 const THEME_OPTIONS = {

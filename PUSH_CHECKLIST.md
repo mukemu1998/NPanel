@@ -1,43 +1,52 @@
 # 发布前检查清单
 
-用于在推送 NPanel 到 GitHub，或准备公开仓库之前做最后检查。
+用于把 `NPanel` 推送到 GitHub，或准备公开仓库、发布新版本前做最后一轮确认。
 
-## 仓库清洁
+## 一、仓库清洁
 
-- [ ] 仓库中没有真实密码、真实 token、私钥或服务器地址
-- [ ] `wrangler.jsonc` 使用的是占位 ID 或可公开配置
-- [ ] `.gitignore` 已忽略本地日志、`.wrangler/`、`node_modules/`、`.dev.vars`
+- [ ] 仓库中没有真实密码、真实 token、真实私钥、真实服务器地址
+- [ ] `wrangler.jsonc` 使用的是可公开配置或占位配置
+- [ ] `.gitignore` 已忽略 `.wrangler/`、`node_modules/`、`.dev.vars` 等本地文件
+- [ ] 没有把测试截图、临时日志、调试文件误提交进仓库
 - [ ] 文档内容与当前代码行为一致
 
-## 本地验证
+## 二、本地验证
 
-- [ ] `npm.cmd test`
-- [ ] `npx.cmd tsc --noEmit`
+- [ ] `npm audit`
+- [ ] `npm test -- --run`
+- [ ] `npx tsc --noEmit`
 - [ ] 本地登录正常
 - [ ] 节点新增、编辑、删除正常
 - [ ] 分组新增、编辑、删除正常
 - [ ] 订阅链接返回内容正常
 
-## Cloudflare 准备
+## 三、开源内容确认
 
-- [ ] 已创建 D1 数据库
-- [ ] 已记录真实 `database_id`
-- [ ] 已准备 `ADMIN_PASSWORD`
-- [ ] 已准备 `SESSION_SECRET`
-- [ ] 已执行或准备执行 `npm run db:remote:init`
+- [ ] 截图中没有私人信息
+- [ ] 示例节点、示例 token、示例域名均为公开示例
+- [ ] 文档中没有真实账号、真实密钥、真实数据库 ID
+- [ ] 仓库内不包含旧项目命名或私人品牌残留
 
-## GitHub 准备
+## 四、Cloudflare 准备
 
-- [ ] 已确认仓库可见性
-- [ ] 已确认默认分支
-- [ ] 已确认远程仓库地址
-- [ ] Cloudflare 已具备访问该 GitHub 仓库的权限
+- [ ] D1 数据库已创建
+- [ ] `database_id` 已准备好
+- [ ] `ADMIN_PASSWORD` 已准备好
+- [ ] `SESSION_SECRET` 已准备好
+- [ ] 如为新环境，已执行或准备执行 `npm run db:remote:init`
 
-## 部署后检查
+## 五、GitHub 准备
 
-- [ ] 面板首页可正常打开
+- [ ] 仓库可见性已确认
+- [ ] 默认分支已确认
+- [ ] 远程仓库地址正确
+- [ ] 如果需要 Cloudflare 自动部署，GitHub 仓库访问权限已打通
+
+## 六、部署后检查
+
+- [ ] 首页可正常打开
 - [ ] 登录正常
-- [ ] `/api/health` 返回期望的存储模式
-- [ ] D1 数据可正常持久化
+- [ ] `/api/health` 返回符合预期
+- [ ] D1 可正常持久化
 - [ ] `v2rayN` 订阅正常
 - [ ] Clash 订阅正常
