@@ -1,0 +1,53 @@
+<svg width="1600" height="960" viewBox="0 0 1600 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="960" rx="28" fill="#121318"/>
+  <rect x="40" y="40" width="1520" height="880" rx="24" fill="#171A21" stroke="#2B3140"/>
+  <text x="90" y="110" fill="#83C7FF" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">NPANEL</text>
+  <text x="90" y="170" fill="#F5F7FA" font-family="Segoe UI, Arial, sans-serif" font-size="56" font-weight="800">Nodes &amp; Subscription Dashboard</text>
+  <text x="90" y="215" fill="#9DA8BA" font-family="Segoe UI, Arial, sans-serif" font-size="26">Manage nodes, build groups, export subscriptions, and monitor connectivity.</text>
+
+  <rect x="1180" y="78" width="140" height="56" rx="16" fill="#222838" stroke="#3C465E"/>
+  <text x="1250" y="113" text-anchor="middle" fill="#EAF2FF" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">Theme</text>
+  <rect x="1340" y="78" width="120" height="56" rx="16" fill="#273440" stroke="#6AC8FF"/>
+  <text x="1400" y="113" text-anchor="middle" fill="#EAF2FF" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="600">Live</text>
+  <rect x="1475" y="78" width="70" height="56" rx="16" fill="#222838" stroke="#3C465E"/>
+  <text x="1510" y="113" text-anchor="middle" fill="#EAF2FF" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">Exit</text>
+
+  <rect x="90" y="270" width="900" height="250" rx="20" fill="#3F4A4E"/>
+  <rect x="1020" y="270" width="490" height="250" rx="20" fill="#475355"/>
+  <text x="120" y="315" fill="#7EC5FF" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">OVERVIEW</text>
+  <text x="120" y="355" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="40" font-weight="800">Runtime Summary</text>
+  <text x="1050" y="335" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="38" font-weight="800">System Status</text>
+  <text x="1050" y="372" fill="#A8B0BA" font-family="Segoe UI, Arial, sans-serif" font-size="22">Storage, auth, last checks, and traffic boundary.</text>
+
+  <rect x="690" y="305" width="125" height="56" rx="16" fill="#BFD8FF"/>
+  <rect x="830" y="305" width="125" height="56" rx="16" fill="#BFD8FF"/>
+  <rect x="970" y="305" width="125" height="56" rx="16" fill="#A8F0F7"/>
+  <text x="752" y="340" text-anchor="middle" fill="#111318" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">Export</text>
+  <text x="892" y="340" text-anchor="middle" fill="#111318" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">Refresh</text>
+  <text x="1032" y="340" text-anchor="middle" fill="#111318" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">Check</text>
+
+  <rect x="120" y="390" width="185" height="96" rx="16" fill="#4B575B" stroke="#5E6F74"/>
+  <rect x="325" y="390" width="185" height="96" rx="16" fill="#4B575B" stroke="#5E6F74"/>
+  <rect x="530" y="390" width="185" height="96" rx="16" fill="#4B575B" stroke="#5E6F74"/>
+  <rect x="735" y="390" width="185" height="96" rx="16" fill="#4B575B" stroke="#5E6F74"/>
+  <text x="145" y="426" fill="#C2CBD7" font-family="Segoe UI, Arial, sans-serif" font-size="22">Nodes</text>
+  <text x="350" y="426" fill="#C2CBD7" font-family="Segoe UI, Arial, sans-serif" font-size="22">Groups</text>
+  <text x="555" y="426" fill="#C2CBD7" font-family="Segoe UI, Arial, sans-serif" font-size="22">Active Nodes</text>
+  <text x="760" y="426" fill="#C2CBD7" font-family="Segoe UI, Arial, sans-serif" font-size="22">Storage</text>
+  <text x="145" y="468" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="800">8</text>
+  <text x="350" y="468" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="800">3</text>
+  <text x="555" y="468" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="800">7</text>
+  <text x="760" y="468" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="800">d1</text>
+
+  <rect x="120" y="540" width="1390" height="160" rx="20" fill="#475355"/>
+  <text x="120" y="760" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="38" font-weight="800">Connectivity Checks</text>
+  <text x="120" y="800" fill="#A8B0BA" font-family="Segoe UI, Arial, sans-serif" font-size="22">Worker-side TCP checks for node reachability.</text>
+  <rect x="1120" y="732" width="340" height="52" rx="26" fill="#5D6C6D" stroke="#A2E8EB"/>
+  <text x="1290" y="765" text-anchor="middle" fill="#EAFBFF" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600">Checks validate entry reachability only</text>
+  <line x1="120" y1="835" x2="1470" y2="835" stroke="#5C686F"/>
+  <text x="130" y="870" fill="#BFC7D1" font-family="Segoe UI, Arial, sans-serif" font-size="22">US-Reality</text>
+  <text x="520" y="870" fill="#BFC7D1" font-family="Segoe UI, Arial, sans-serif" font-size="22">TCP OK</text>
+  <text x="740" y="870" fill="#BFC7D1" font-family="Segoe UI, Arial, sans-serif" font-size="22">108 ms</text>
+  <text x="960" y="870" fill="#BFC7D1" font-family="Segoe UI, Arial, sans-serif" font-size="22">-</text>
+  <text x="1140" y="870" fill="#BFC7D1" font-family="Segoe UI, Arial, sans-serif" font-size="22">2026-06-17 06:00</text>
+</svg>

@@ -1,0 +1,30 @@
+/**
+ * Local-only Wrangler config for D1 development.
+ * This file uses a placeholder local database id so local D1 commands can run
+ * without touching the production config.
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "npanel-local",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-03-10",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"assets": {
+		"directory": "./public"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "npanel",
+			"database_id": "00000000-0000-0000-0000-000000000001",
+			"preview_database_id": "00000000-0000-0000-0000-000000000001"
+		}
+	],
+	"observability": {
+		"enabled": true
+	},
+	"upload_source_maps": true
+}

@@ -1,0 +1,30 @@
+{
+  "name": "npanel",
+  "version": "0.0.0",
+  "private": true,
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "dev:d1": "wrangler dev --config ./wrangler.local.jsonc --port 8788",
+    "start": "wrangler dev",
+    "test": "vitest",
+    "cf-typegen": "wrangler types",
+    "db:local:init": "wrangler d1 execute npanel --local --file=./database/0001_init.sql --config ./wrangler.local.jsonc",
+    "db:local:seed": "wrangler d1 execute npanel --local --file=./database/0002_seed_demo.sql --config ./wrangler.local.jsonc",
+    "db:remote:init": "wrangler d1 execute npanel --remote --file=./database/0001_init.sql",
+    "db:remote:seed:demo": "node ./scripts/run-remote-demo-seed.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.12.4",
+    "@types/node": "^25.9.3",
+    "typescript": "^5.5.2",
+    "vitest": "~3.2.0",
+    "wrangler": "^4.100.0"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  }
+}
