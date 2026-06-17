@@ -107,6 +107,7 @@ change-me
 ## 文档入口
 
 - 部署流程：[DEPLOY_GITHUB_CLOUDFLARE.md](DEPLOY_GITHUB_CLOUDFLARE.md)
+- 常用备忘：[QUICK_WORKFLOW.md](QUICK_WORKFLOW.md)
 - 后期维护：[MAINTENANCE.md](MAINTENANCE.md)
 - 常见问题：[FAQ.md](FAQ.md)
 - 发布前检查：[PUSH_CHECKLIST.md](PUSH_CHECKLIST.md)
