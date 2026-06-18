@@ -1,4 +1,5 @@
 const THEME_STORAGE_KEY = "npanel-theme-v1";
+const DEFAULT_TAB_ICON = "🐤";
 
 const PANEL_CONFIG = {
 	brand: "NPanel",
@@ -45,6 +46,7 @@ const DEFAULT_THEME = {
 	mode: "dark",
 	family: "mono",
 	palette: "graphite",
+	tabIcon: DEFAULT_TAB_ICON,
 };
 
 const THEME_MODES = [
@@ -161,6 +163,7 @@ const els = {
 	themeModalSummary: document.querySelector("#theme-modal-summary"),
 	themeFamilyDescription: document.querySelector("#theme-family-description"),
 	brandInput: document.querySelector("#brand-input"),
+	themeIconInput: document.querySelector("#theme-icon-input"),
 	};
 
 function applyPanelBrand(brand = state.brand) {
@@ -169,6 +172,32 @@ function applyPanelBrand(brand = state.brand) {
 	document.querySelectorAll("[data-panel-brand]").forEach((element) => {
 		element.textContent = state.brand;
 	});
+}
+
+function normalizeTabIcon(value) {
+	const icon = String(value || "").trim();
+	return icon || DEFAULT_TAB_ICON;
+}
+
+function escapeSvgText(value) {
+	return String(value)
+		.replaceAll("&", "&amp;")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll('"', "&quot;");
+}
+
+function applyTabIcon(icon) {
+	const normalized = normalizeTabIcon(icon);
+	let link = document.querySelector("#tab-icon-link");
+	if (!link) {
+		link = document.createElement("link");
+		link.id = "tab-icon-link";
+		link.rel = "icon";
+		document.head.appendChild(link);
+	}
+	const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50%" y="0.9em" text-anchor="middle" font-size="88">${escapeSvgText(normalized)}</text></svg>`;
+	link.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
 function buildQrAssetUrl(text, label) {
@@ -208,6 +237,7 @@ function normalizeTheme(theme) {
 		mode,
 		family,
 		palette: preset.id,
+		tabIcon: normalizeTabIcon(theme?.tabIcon),
 	};
 }
 
@@ -233,6 +263,7 @@ function applyTheme(theme, { commit = false } = {}) {
 	document.documentElement.dataset.themeModePreference = normalized.mode;
 	document.documentElement.dataset.themeFamily = normalized.family;
 	document.documentElement.dataset.themePalette = normalized.palette;
+	applyTabIcon(normalized.tabIcon);
 }
 
 function renderThemeOptions() {
@@ -286,6 +317,7 @@ function renderThemeOptions() {
 function openThemeModal() {
 	state.themeDraft = { ...state.theme };
 	els.brandInput.value = state.brand;
+	els.themeIconInput.value = state.themeDraft.tabIcon || DEFAULT_TAB_ICON;
 	renderThemeOptions();
 	els.themeModal.hidden = false;
 }
@@ -1558,11 +1590,13 @@ els.themeResetButton.addEventListener("click", () => {
 	state.themeDraft = { ...DEFAULT_THEME };
 	applyTheme(state.themeDraft);
 	els.brandInput.value = PANEL_CONFIG.brand;
+	els.themeIconInput.value = DEFAULT_TAB_ICON;
 	renderThemeOptions();
 });
 
 els.themeSaveButton.addEventListener("click", async () => {
 	try {
+		state.themeDraft.tabIcon = normalizeTabIcon(els.themeIconInput.value);
 		const normalized = normalizeTheme(state.themeDraft);
 		const brand = els.brandInput.value.trim() || PANEL_CONFIG.brand;
 		applyTheme(normalized, { commit: true });
@@ -1577,6 +1611,11 @@ els.themeSaveButton.addEventListener("click", async () => {
 	} catch (error) {
 		showToast(error.message, "error");
 	}
+});
+
+els.themeIconInput.addEventListener("input", () => {
+	state.themeDraft.tabIcon = normalizeTabIcon(els.themeIconInput.value);
+	applyTheme(state.themeDraft);
 });
 
 els.themeModal.addEventListener("click", (event) => {

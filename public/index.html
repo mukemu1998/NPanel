@@ -32,6 +32,17 @@
 					document.documentElement.dataset.themeModePreference = modePreference;
 					document.documentElement.dataset.themeFamily = family;
 					document.documentElement.dataset.themePalette = palette;
+					const tabIcon = typeof saved?.tabIcon === "string" && saved.tabIcon.trim() ? saved.tabIcon.trim() : "🐤";
+					const safeIcon = tabIcon
+						.replaceAll("&", "&amp;")
+						.replaceAll("<", "&lt;")
+						.replaceAll(">", "&gt;")
+						.replaceAll('"', "&quot;");
+					const link = document.createElement("link");
+					link.id = "tab-icon-link";
+					link.rel = "icon";
+					link.href = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50%" y="0.9em" text-anchor="middle" font-size="88">${safeIcon}</text></svg>`)}`;
+					document.head.appendChild(link);
 				} catch {}
 			})();
 		</script>
@@ -370,6 +381,16 @@
 						<label class="field">
 							<span>品牌名</span>
 							<input id="brand-input" maxlength="40" placeholder="例如 Example Panel" />
+						</label>
+					</section>
+					<section class="stack">
+						<div class="panel-subtitle">
+							<h3>网页标签图标</h3>
+							<p>用于浏览器标签页 favicon，默认显示 🐤。</p>
+						</div>
+						<label class="field">
+							<span>标签图标</span>
+							<input id="theme-icon-input" maxlength="16" placeholder="🐤" />
 						</label>
 					</section>
 					<section class="stack">
