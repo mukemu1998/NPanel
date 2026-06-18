@@ -177,7 +177,7 @@
 										<section class="import-panel stack">
 											<div class="panel-subtitle">
 												<h3>导入节点信息</h3>
-												<p>支持识别 `vless://`、`trojan://`、JSON 节点配置，以及按键值粘贴的配置信息。粘贴多条时可先识别，再选择其中一条填入表单。</p>
+												<p>粘贴分享链接或 JSON 配置可自动识别；也可以切到手动填写。</p>
 											</div>
 											<label class="field">
 												<span>导入内容</span>
@@ -186,15 +186,17 @@
 											<div class="button-row">
 												<button id="node-import-paste-button" class="button ghost" type="button">读取剪贴板</button>
 												<button id="node-import-parse-button" class="button ghost" type="button">识别内容</button>
+												<button id="node-manual-toggle-button" class="button ghost" type="button">手动填写</button>
 											</div>
 											<label class="field" id="node-import-select-wrap" hidden>
 												<span>识别结果</span>
 												<select id="node-import-select"></select>
 											</label>
 											<div class="button-row">
-												<button id="node-import-apply-button" class="button ghost" type="button" hidden>填入当前节点表单</button>
+												<button id="node-import-apply-button" class="button ghost" type="button" hidden>使用此节点</button>
 											</div>
 										</section>
+										<div id="node-detail-fields" class="node-detail-fields stack" hidden>
 										<div class="form-grid two">
 											<label class="field">
 												<span>节点名称</span>
@@ -273,6 +275,7 @@
 										<div class="button-row">
 											<button class="button primary" type="submit">保存节点</button>
 											<button id="reset-node-button" class="button ghost" type="button">清空表单</button>
+										</div>
 										</div>
 									</form>
 								</div>

@@ -114,6 +114,8 @@ const els = {
 	nodeImportSelectWrap: document.querySelector("#node-import-select-wrap"),
 	nodeImportSelect: document.querySelector("#node-import-select"),
 	nodeImportApplyButton: document.querySelector("#node-import-apply-button"),
+	nodeManualToggleButton: document.querySelector("#node-manual-toggle-button"),
+	nodeDetailFields: document.querySelector("#node-detail-fields"),
 	nodeName: document.querySelector("#node-name"),
 	nodeProtocol: document.querySelector("#node-protocol"),
 	nodeServer: document.querySelector("#node-server"),
@@ -303,6 +305,11 @@ function setNodeEditorOpen(open) {
 	els.nodeEditorGrid.classList.toggle("is-collapsed", !state.nodeEditorOpen);
 	els.newNodeButton.textContent = state.nodeEditorOpen ? "收起节点" : "新建节点";
 	scheduleScrollWindowSync();
+}
+
+function setNodeDetailOpen(open) {
+	els.nodeDetailFields.hidden = !open;
+	els.nodeManualToggleButton.textContent = open ? "隐藏表单" : "手动填写";
 }
 
 function setGroupEditorOpen(open) {
@@ -1157,9 +1164,11 @@ function applyImportCandidate(index = 0) {
 		return;
 	}
 	fillNodeForm(candidate.value, "import");
+	clearImportCandidates();
+	setNodeDetailOpen(true);
 	setNodeEditorOpen(true);
 	els.nodeEditorSide.scrollIntoView({ behavior: "smooth", block: "start" });
-	showToast(`已导入 ${candidate.value.name}`);
+	showToast(`已识别并填入 ${candidate.value.name}，确认后保存`);
 }
 
 function updateNodeProtocolHelp() {
@@ -1217,6 +1226,7 @@ function fillNodeForm(node, mode = node?.id ? "edit" : "create") {
 		els.nodeImportText.value = "";
 		clearImportCandidates();
 	}
+	setNodeDetailOpen(mode !== "create");
 	updateNodeProtocolHelp();
 	updateNodeTrafficFields();
 }
@@ -1688,6 +1698,10 @@ els.nodeProtocol.addEventListener("change", () => {
 
 els.nodeTrafficMode.addEventListener("change", () => {
 	updateNodeTrafficFields();
+});
+
+els.nodeManualToggleButton.addEventListener("click", () => {
+	setNodeDetailOpen(els.nodeDetailFields.hidden);
 });
 
 els.nodeImportPasteButton.addEventListener("click", async () => {
