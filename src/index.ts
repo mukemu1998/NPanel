@@ -103,15 +103,16 @@ function encodeDispositionFilename(value: string): string {
 		.replace(/%(7C|60|5E)/g, (match) => match.toLowerCase());
 }
 
-function buildSubscriptionTitle(): string {
-	return DEFAULT_BRAND;
+function buildSubscriptionTitle(settings?: Partial<AppSettings>): string {
+	return String(settings?.projectName ?? settings?.brand ?? "").trim() || DEFAULT_BRAND;
 }
 
 function buildSubscriptionHeaders(
 	format: "v2rayn" | "clash",
+	settings?: Partial<AppSettings>,
 ): HeadersInit {
 	const extension = format === "clash" ? "yaml" : "txt";
-	const title = buildSubscriptionTitle();
+	const title = buildSubscriptionTitle(settings);
 	const fallbackFileBase = slugify(title) || "subscription";
 	const utf8FileName = `${title}.${extension}`;
 	const fallbackFileName = `${fallbackFileBase}.${extension}`;
@@ -212,12 +213,12 @@ async function requireAuth(request: Request, env: AppEnv): Promise<Response | nu
 async function getSettingsSnapshot(request: Request, env: AppEnv): Promise<AppSettings> {
 	const store = requireStore(request, env);
 	if (store instanceof Response) {
-		return { brand: DEFAULT_BRAND };
+		return { brand: DEFAULT_BRAND, projectName: DEFAULT_BRAND };
 	}
 	try {
 		return await store.getSettings();
 	} catch {
-		return { brand: DEFAULT_BRAND };
+		return { brand: DEFAULT_BRAND, projectName: DEFAULT_BRAND };
 	}
 }
 
@@ -296,10 +297,11 @@ export default {
 			if (!group || !group.enabled) {
 				return text("Subscription not found", { status: 404 });
 			}
+			const settings = await store.getSettings();
 			return text(buildV2rayNSubscription(group), {
 				headers: {
 					"content-type": "text/plain; charset=utf-8",
-					...buildSubscriptionHeaders("v2rayn"),
+					...buildSubscriptionHeaders("v2rayn", settings),
 				},
 			});
 		}
@@ -312,10 +314,11 @@ export default {
 			if (!group || !group.enabled) {
 				return text("Subscription not found", { status: 404 });
 			}
-			return text(buildClashSubscription(group, buildSubscriptionTitle()), {
+			const settings = await store.getSettings();
+			return text(buildClashSubscription(group, buildSubscriptionTitle(settings)), {
 				headers: {
 					"content-type": "text/yaml; charset=utf-8",
-					...buildSubscriptionHeaders("clash"),
+					...buildSubscriptionHeaders("clash", settings),
 				},
 			});
 		}

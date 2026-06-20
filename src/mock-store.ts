@@ -21,6 +21,7 @@ const mockState: {
 } = {
 	settings: {
 		brand: DEFAULT_BRAND,
+		projectName: DEFAULT_BRAND,
 	},
 	nodes: [
 		{
@@ -182,8 +183,10 @@ export function createMockStore(): AppStore {
 			return { ...mockState.settings };
 		},
 		async saveSettings(input) {
+			const projectName = String(input.projectName ?? input.brand ?? "").trim() || DEFAULT_BRAND;
 			mockState.settings = {
-				brand: String(input.brand ?? "").trim() || DEFAULT_BRAND,
+				brand: projectName,
+				projectName,
 			};
 			return { ...mockState.settings };
 		},

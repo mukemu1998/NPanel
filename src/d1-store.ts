@@ -72,11 +72,16 @@ async function ensureSettingsTable(db: D1Database) {
 
 async function readSettings(db: D1Database): Promise<AppSettings> {
 	await ensureSettingsTable(db);
-	const row = await db
-		.prepare("SELECT value FROM app_settings WHERE key = 'brand'")
-		.first<{ value: string | null }>();
+	const result = await db
+		.prepare("SELECT key, value FROM app_settings WHERE key IN ('project_name', 'brand')")
+		.all<{ key: string; value: string | null }>();
+	const values = new Map(
+		(result.results ?? []).map((row) => [String(row.key), String(row.value ?? "").trim()]),
+	);
+	const projectName = values.get("project_name") || values.get("brand") || DEFAULT_BRAND;
 	return {
-		brand: row?.value?.trim() || DEFAULT_BRAND,
+		brand: projectName,
+		projectName,
 	};
 }
 
@@ -108,20 +113,22 @@ export function createD1Store(db: D1Database): AppStore {
 			return readSettings(db);
 		},
 		async saveSettings(input) {
-			const brand = String(input.brand ?? "").trim() || DEFAULT_BRAND;
+			const projectName = String(input.projectName ?? input.brand ?? "").trim() || DEFAULT_BRAND;
 			const updatedAt = new Date().toISOString();
 			await ensureSettingsTable(db);
-			await db
-				.prepare(
-					`INSERT INTO app_settings (key, value, updated_at)
-					 VALUES ('brand', ?, ?)
-					 ON CONFLICT(key) DO UPDATE SET
-					 	value = excluded.value,
-					 	updated_at = excluded.updated_at`,
-				)
-				.bind(brand, updatedAt)
-				.run();
-			return { brand };
+			for (const key of ["project_name", "brand"]) {
+				await db
+					.prepare(
+						`INSERT INTO app_settings (key, value, updated_at)
+						 VALUES (?, ?, ?)
+						 ON CONFLICT(key) DO UPDATE SET
+								value = excluded.value,
+								updated_at = excluded.updated_at`,
+					)
+					.bind(key, projectName, updatedAt)
+					.run();
+			}
+			return { brand: projectName, projectName };
 		},
 		async listNodes() {
 			const result = await db.prepare("SELECT * FROM nodes ORDER BY name ASC").all();

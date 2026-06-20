@@ -60,6 +60,7 @@ const state = {
 	authConfigured: false,
 	usingDevAuthFallback: false,
 	brand: PANEL_CONFIG.brand,
+	projectName: PANEL_CONFIG.brand,
 	nodes: [],
 	groups: [],
 	checks: [],
@@ -166,11 +167,12 @@ const els = {
 	themeIconInput: document.querySelector("#theme-icon-input"),
 	};
 
-function applyPanelBrand(brand = state.brand) {
-	state.brand = String(brand || "").trim() || PANEL_CONFIG.brand;
-	document.title = state.brand;
+function applyPanelBrand(projectName = state.projectName) {
+	state.projectName = String(projectName || "").trim() || PANEL_CONFIG.brand;
+	state.brand = state.projectName;
+	document.title = state.projectName;
 	document.querySelectorAll("[data-panel-brand]").forEach((element) => {
-		element.textContent = state.brand;
+		element.textContent = state.projectName;
 	});
 }
 
@@ -316,7 +318,7 @@ function renderThemeOptions() {
 
 function openThemeModal() {
 	state.themeDraft = { ...state.theme };
-	els.brandInput.value = state.brand;
+	els.brandInput.value = state.projectName;
 	els.themeIconInput.value = state.themeDraft.tabIcon || DEFAULT_TAB_ICON;
 	renderThemeOptions();
 	els.themeModal.hidden = false;
@@ -854,7 +856,7 @@ function renderNodes() {
 }
 
 function getProjectTitle() {
-	return PANEL_CONFIG.brand || "subscription";
+	return state.projectName || state.brand || PANEL_CONFIG.brand || "subscription";
 }
 
 function buildNamedSubscriptionUrl(origin, kind, token, title, extension) {
@@ -1474,7 +1476,7 @@ async function refreshSessionState() {
 	const session = await api("/api/session");
 	state.authConfigured = Boolean(session.authConfigured);
 	state.usingDevAuthFallback = Boolean(session.usingDevAuthFallback);
-	applyPanelBrand(session.settings?.brand || PANEL_CONFIG.brand);
+	applyPanelBrand(session.settings?.projectName || session.settings?.brand || PANEL_CONFIG.brand);
 	setAuthenticated(session.authenticated, session.storageMode);
 	renderSystemStatus();
 	return session;
@@ -1595,14 +1597,14 @@ els.themeSaveButton.addEventListener("click", async () => {
 	try {
 		state.themeDraft.tabIcon = normalizeTabIcon(els.themeIconInput.value);
 		const normalized = normalizeTheme(state.themeDraft);
-		const brand = els.brandInput.value.trim() || PANEL_CONFIG.brand;
+		const projectName = els.brandInput.value.trim() || PANEL_CONFIG.brand;
 		applyTheme(normalized, { commit: true });
 		saveTheme(normalized);
 		await api("/api/settings", {
 			method: "PUT",
-			body: JSON.stringify({ brand }),
+			body: JSON.stringify({ projectName, brand: projectName }),
 		});
-		applyPanelBrand(brand);
+		applyPanelBrand(projectName);
 		await loadDashboard();
 		closeThemeModal({ revert: false });
 		showToast("设置已应用");

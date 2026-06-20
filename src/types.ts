@@ -65,6 +65,7 @@ export interface DashboardSummary {
 
 export interface AppSettings {
 	brand: string;
+	projectName: string;
 }
 
 export interface AppStore {

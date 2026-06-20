@@ -95,7 +95,7 @@ describe("NPanel worker", () => {
 		expect(payload.items.some((item) => item.name === "Test Node")).toBe(true);
 	});
 
-	it("saves custom brand settings", async () => {
+	it("saves custom project name settings", async () => {
 		const loginResponse = await SELF.fetch("http://127.0.0.1/api/auth/login", {
 			method: "POST",
 			headers: {
@@ -111,15 +111,17 @@ describe("NPanel worker", () => {
 				"content-type": "application/json",
 				cookie,
 			},
-			body: JSON.stringify({ brand: "Example Panel" }),
+			body: JSON.stringify({ projectName: "Example Panel" }),
 		});
 		expect(saveResponse.status).toBe(200);
-		const saved = await saveResponse.json<{ brand: string }>();
+		const saved = await saveResponse.json<{ brand: string; projectName: string }>();
 		expect(saved.brand).toBe("Example Panel");
+		expect(saved.projectName).toBe("Example Panel");
 
 		const sessionResponse = await SELF.fetch("http://127.0.0.1/api/session");
-		const session = await sessionResponse.json<{ settings: { brand: string } }>();
+		const session = await sessionResponse.json<{ settings: { brand: string; projectName: string } }>();
 		expect(session.settings.brand).toBe("Example Panel");
+		expect(session.settings.projectName).toBe("Example Panel");
 
 		await SELF.fetch("http://127.0.0.1/api/settings", {
 			method: "PUT",
@@ -127,11 +129,11 @@ describe("NPanel worker", () => {
 				"content-type": "application/json",
 				cookie,
 			},
-			body: JSON.stringify({ brand: "NPanel" }),
+			body: JSON.stringify({ projectName: "NPanel" }),
 		});
 	});
 
-	it("keeps subscription title on the project default brand", async () => {
+	it("uses custom project name in subscription titles", async () => {
 		const loginResponse = await SELF.fetch("http://127.0.0.1/api/auth/login", {
 			method: "POST",
 			headers: {
@@ -147,17 +149,17 @@ describe("NPanel worker", () => {
 				"content-type": "application/json",
 				cookie,
 			},
-			body: JSON.stringify({ brand: "Example Panel" }),
+			body: JSON.stringify({ projectName: "Example Panel" }),
 		});
 
 		const response = await SELF.fetch(
 			"http://example.com/subscribe/clash/demo-gemini-group/Example%20Panel.yaml",
 		);
 		expect(response.status).toBe(200);
-		expect(response.headers.get("profile-title")).toBe("base64:TlBhbmVs");
-		expect(response.headers.get("content-disposition")).toContain('filename="npanel.yaml"');
+		expect(response.headers.get("profile-title")).toBe("base64:RXhhbXBsZSBQYW5lbA==");
+		expect(response.headers.get("content-disposition")).toContain('filename="example-panel.yaml"');
 		const text = await response.text();
-		expect(text).toContain("name: 'NPanel'");
+		expect(text).toContain("name: 'Example Panel'");
 
 		await SELF.fetch("http://127.0.0.1/api/settings", {
 			method: "PUT",
@@ -165,7 +167,7 @@ describe("NPanel worker", () => {
 				"content-type": "application/json",
 				cookie,
 			},
-			body: JSON.stringify({ brand: "NPanel" }),
+			body: JSON.stringify({ projectName: "NPanel" }),
 		});
 	});
 
