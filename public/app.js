@@ -883,7 +883,7 @@ function renderGroups() {
 			const members = group.members
 				.map((member) => member.displayName || member.node?.name || member.nodeId)
 				.join(" / ");
-			const projectTitle = getProjectTitle();
+			const projectTitle = String(group.projectName || "").trim() || getProjectTitle();
 			const v2raynUrl = buildNamedSubscriptionUrl(
 				origin,
 				"v2rayn",

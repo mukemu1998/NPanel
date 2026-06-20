@@ -161,6 +161,12 @@ describe("NPanel worker", () => {
 		const text = await response.text();
 		expect(text).toContain("name: 'Example Panel'");
 
+		const groupsResponse = await SELF.fetch("http://127.0.0.1/api/groups", {
+			headers: { cookie },
+		});
+		const groupsPayload = await groupsResponse.json<{ items: Array<{ projectName: string }> }>();
+		expect(groupsPayload.items[0].projectName).toBe("Example Panel");
+
 		await SELF.fetch("http://127.0.0.1/api/settings", {
 			method: "PUT",
 			headers: {
