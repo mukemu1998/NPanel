@@ -53,6 +53,7 @@ export interface CheckRecord {
 
 export interface GroupWithMembers extends GroupRecord {
 	members: Array<GroupMemberRecord & { node: NodeRecord | null }>;
+	subscriptionTitle?: string;
 }
 
 export interface DashboardSummary {

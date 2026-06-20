@@ -854,10 +854,13 @@ function renderNodes() {
 }
 
 function getSubscriptionTitle(group) {
-	const brand = String(state.brand || "").trim();
-	return brand && brand !== PANEL_CONFIG.brand
-		? brand
-		: group.name || group.slug || "subscription";
+	return (
+		String(group.subscriptionTitle || "").trim() ||
+		String(state.brand || "").trim() ||
+		group.name ||
+		group.slug ||
+		"subscription"
+	);
 }
 
 function buildNamedSubscriptionUrl(origin, kind, token, title, extension) {
@@ -1617,7 +1620,7 @@ els.themeSaveButton.addEventListener("click", async () => {
 			body: JSON.stringify({ brand }),
 		});
 		applyPanelBrand(brand);
-		renderGroups();
+		await loadDashboard();
 		closeThemeModal({ revert: false });
 		showToast("设置已应用");
 	} catch (error) {

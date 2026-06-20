@@ -432,7 +432,13 @@ export default {
 			}
 
 			if (url.pathname === "/api/groups" && request.method === "GET") {
-				return json({ items: await store.listGroups() });
+				const [groups, settings] = await Promise.all([store.listGroups(), store.getSettings()]);
+				return json({
+					items: groups.map((group) => ({
+						...group,
+						subscriptionTitle: buildSubscriptionTitle(group, settings),
+					})),
+				});
 			}
 
 			if (url.pathname === "/api/groups" && request.method === "POST") {
