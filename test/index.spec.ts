@@ -251,6 +251,10 @@ describe("NPanel worker", () => {
 		expect(text).toContain("US-Gemini-via-HK");
 		expect(text).toContain("US-Gemini-Reality");
 		expect(text).toContain("共享流量");
+		expect(text).toContain("profile-name: 'Gemini'");
+		expect(text).toContain("cfw-name: 'Gemini'");
+		expect(text).toContain("title: 'Gemini'");
+		expect(text).toContain("profile:");
 	});
 
 	it("serves authenticated subscription qr svg", async () => {
@@ -334,6 +338,8 @@ describe("NPanel worker", () => {
 		expect(response.headers.get("content-disposition")).toContain('filename="example-relay-group.yaml"');
 		const text = await response.text();
 		expect(text).toContain("name: 'Example Relay Group'");
+		expect(text).toContain("profile-name: 'Example Relay Group'");
+		expect(text).toContain("cfw-name: 'Example Relay Group'");
 		expect(text).toContain("- 'MATCH,Example Relay Group'");
 		expect(text).not.toContain("MATCH,'Example Relay Group'");
 	});

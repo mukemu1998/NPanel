@@ -139,6 +139,20 @@ function renderClashProxy(node: NodeRecord, displayName: string): string[] {
 	}
 }
 
+function renderClashProfileMetadata(profileName: string): string[] {
+	const escapedName = yamlEscape(profileName);
+	return [
+		`name: ${escapedName}`,
+		`profile-name: ${escapedName}`,
+		`cfw-name: ${escapedName}`,
+		`title: ${escapedName}`,
+		`profile:`,
+		`  name: ${escapedName}`,
+		`  title: ${escapedName}`,
+		`  store-selected: true`,
+	];
+}
+
 export function buildClashSubscription(group: GroupWithMembers, profileName = group.name): string {
 	const members = group.members.filter((member) => member.node?.enabled);
 	const names = members.map((member) =>
@@ -151,7 +165,7 @@ export function buildClashSubscription(group: GroupWithMembers, profileName = gr
 		),
 	);
 	return [
-		`name: ${yamlEscape(profileName)}`,
+		...renderClashProfileMetadata(profileName),
 		`mixed-port: 7890`,
 		`allow-lan: false`,
 		`mode: rule`,
