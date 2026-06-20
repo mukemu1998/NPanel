@@ -867,12 +867,9 @@ function buildNamedSubscriptionUrl(origin, kind, token, title, extension) {
 	return `${origin}/subscribe/${kind}/${encodeURIComponent(token)}/${encodeURIComponent(`${title}.${extension}`)}`;
 }
 
-function addSubscriptionNameParams(url, title) {
+function addSubscriptionCacheParam(url) {
 	const params = new URLSearchParams({
-		name: title,
-		"profile-name": title,
-		"cfw-name": title,
-		title,
+		t: Date.now().toString(36),
 	});
 	return `${url}?${params.toString()}`;
 }
@@ -913,7 +910,7 @@ function renderGroups() {
 				subscriptionTitle,
 				"yaml",
 			);
-			const clashImportUrl = addSubscriptionNameParams(clashUrl, subscriptionTitle);
+			const clashImportUrl = addSubscriptionCacheParam(clashUrl);
 			const toggleLabel = group.enabled ? "已启用" : "未启用";
 			const trafficLabel = group.showTrafficInName ? "显示流量" : "隐藏流量";
 			const subscriptionControls = group.enabled

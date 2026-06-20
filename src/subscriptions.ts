@@ -153,6 +153,14 @@ function renderClashProfileMetadata(profileName: string): string[] {
 	];
 }
 
+function renderClashProfileComments(profileName: string): string[] {
+	const encodedName = base64EncodeUtf8(profileName);
+	return [
+		`#profile-title: base64:${encodedName}`,
+		`# profile-title: base64:${encodedName}`,
+	];
+}
+
 export function buildClashSubscription(group: GroupWithMembers, profileName = group.name): string {
 	const members = group.members.filter((member) => member.node?.enabled);
 	const proxyGroupName = profileName.trim() || group.name;
@@ -166,6 +174,7 @@ export function buildClashSubscription(group: GroupWithMembers, profileName = gr
 		),
 	);
 	return [
+		...renderClashProfileComments(profileName),
 		...renderClashProfileMetadata(profileName),
 		`mixed-port: 7890`,
 		`allow-lan: false`,
