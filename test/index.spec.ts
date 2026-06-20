@@ -131,7 +131,7 @@ describe("NPanel worker", () => {
 		});
 	});
 
-	it("uses custom brand in clash subscription title headers", async () => {
+	it("keeps subscription title on the project default brand", async () => {
 		const loginResponse = await SELF.fetch("http://127.0.0.1/api/auth/login", {
 			method: "POST",
 			headers: {
@@ -154,10 +154,10 @@ describe("NPanel worker", () => {
 			"http://example.com/subscribe/clash/demo-gemini-group/Example%20Panel.yaml",
 		);
 		expect(response.status).toBe(200);
-		expect(response.headers.get("profile-title")).toBe("base64:RXhhbXBsZSBQYW5lbA==");
-		expect(response.headers.get("content-disposition")).toContain('filename="example-panel.yaml"');
+		expect(response.headers.get("profile-title")).toBe("base64:TlBhbmVs");
+		expect(response.headers.get("content-disposition")).toContain('filename="npanel.yaml"');
 		const text = await response.text();
-		expect(text).toContain("name: 'Example Panel'");
+		expect(text).toContain("name: 'NPanel'");
 
 		await SELF.fetch("http://127.0.0.1/api/settings", {
 			method: "PUT",
@@ -232,8 +232,8 @@ describe("NPanel worker", () => {
 			"http://example.com/subscribe/v2rayn/demo-gemini-group/Gemini.txt",
 		);
 		expect(response.status).toBe(200);
-		expect(response.headers.get("profile-title")).toBe("base64:R2VtaW5p");
-		expect(response.headers.get("content-disposition")).toContain('filename="gemini.txt"');
+		expect(response.headers.get("profile-title")).toBe("base64:TlBhbmVs");
+		expect(response.headers.get("content-disposition")).toContain('filename="npanel.txt"');
 		const text = await response.text();
 		expect(text.length).toBeGreaterThan(20);
 		const decoded = decodeURIComponent(escape(atob(text)));
@@ -245,16 +245,12 @@ describe("NPanel worker", () => {
 			"http://example.com/subscribe/clash/demo-gemini-group/Gemini.yaml",
 		);
 		expect(response.status).toBe(200);
-		expect(response.headers.get("profile-title")).toBe("base64:R2VtaW5p");
-		expect(response.headers.get("content-disposition")).toContain('filename="gemini.yaml"');
+		expect(response.headers.get("profile-title")).toBe("base64:TlBhbmVs");
+		expect(response.headers.get("content-disposition")).toContain('filename="npanel.yaml"');
 		const text = await response.text();
 		expect(text).toContain("US-Gemini-via-HK");
 		expect(text).toContain("US-Gemini-Reality");
 		expect(text).toContain("共享流量");
-		expect(text).toContain("profile-name: 'Gemini'");
-		expect(text).toContain("cfw-name: 'Gemini'");
-		expect(text).toContain("title: 'Gemini'");
-		expect(text).toContain("profile:");
 	});
 
 	it("serves authenticated subscription qr svg", async () => {
@@ -334,12 +330,10 @@ describe("NPanel worker", () => {
 
 		const response = await SELF.fetch("http://example.com/subscribe/clash/emoji-group-token");
 		expect(response.status).toBe(200);
-		expect(response.headers.get("profile-title")).toBe("base64:RXhhbXBsZSBSZWxheSBHcm91cA==");
-		expect(response.headers.get("content-disposition")).toContain('filename="example-relay-group.yaml"');
+		expect(response.headers.get("profile-title")).toBe("base64:TlBhbmVs");
+		expect(response.headers.get("content-disposition")).toContain('filename="npanel.yaml"');
 		const text = await response.text();
-		expect(text).toContain("name: 'Example Relay Group'");
-		expect(text).toContain("profile-name: 'Example Relay Group'");
-		expect(text).toContain("cfw-name: 'Example Relay Group'");
+		expect(text).toContain("name: 'NPanel'");
 		expect(text).toContain("- 'MATCH,Example Relay Group'");
 		expect(text).not.toContain("MATCH,'Example Relay Group'");
 	});

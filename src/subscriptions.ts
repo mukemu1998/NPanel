@@ -10,7 +10,7 @@ function encodeName(name: string): string {
 
 function formatTrafficBadge(node: NodeRecord): string {
 	if (node.trafficMode === "unlimited") {
-		return "不限流";
+		return "不限流量";
 	}
 	const isShared = node.trafficMode === "shared-report";
 	const prefix = isShared ? "共享流量 " : "";
@@ -143,27 +143,11 @@ function renderClashProfileMetadata(profileName: string): string[] {
 	const escapedName = yamlEscape(profileName);
 	return [
 		`name: ${escapedName}`,
-		`profile-name: ${escapedName}`,
-		`cfw-name: ${escapedName}`,
-		`title: ${escapedName}`,
-		`profile:`,
-		`  name: ${escapedName}`,
-		`  title: ${escapedName}`,
-		`  store-selected: true`,
-	];
-}
-
-function renderClashProfileComments(profileName: string): string[] {
-	const encodedName = base64EncodeUtf8(profileName);
-	return [
-		`#profile-title: base64:${encodedName}`,
-		`# profile-title: base64:${encodedName}`,
 	];
 }
 
 export function buildClashSubscription(group: GroupWithMembers, profileName = group.name): string {
 	const members = group.members.filter((member) => member.node?.enabled);
-	const proxyGroupName = profileName.trim() || group.name;
 	const names = members.map((member) =>
 		yamlEscape(renderNodeName(group.name, member.node!, member.displayName, group.showTrafficInName)),
 	);
@@ -174,7 +158,6 @@ export function buildClashSubscription(group: GroupWithMembers, profileName = gr
 		),
 	);
 	return [
-		...renderClashProfileComments(profileName),
 		...renderClashProfileMetadata(profileName),
 		`mixed-port: 7890`,
 		`allow-lan: false`,
@@ -183,10 +166,10 @@ export function buildClashSubscription(group: GroupWithMembers, profileName = gr
 		`proxies:`,
 		...proxyLines,
 		`proxy-groups:`,
-		`  - name: ${yamlEscape(proxyGroupName)}`,
+		`  - name: ${yamlEscape(group.name)}`,
 		`    type: select`,
 		`    proxies: [${names.join(", ")}]`,
 		`rules:`,
-		`  - ${yamlEscape(`MATCH,${proxyGroupName}`)}`,
+		`  - ${yamlEscape(`MATCH,${group.name}`)}`,
 	].join("\n");
 }

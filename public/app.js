@@ -853,34 +853,12 @@ function renderNodes() {
 	scheduleScrollWindowSync();
 }
 
-function getSubscriptionTitle(group) {
-	return (
-		String(group.subscriptionTitle || "").trim() ||
-		String(state.brand || "").trim() ||
-		group.name ||
-		group.slug ||
-		"subscription"
-	);
+function getProjectTitle() {
+	return PANEL_CONFIG.brand || "subscription";
 }
 
 function buildNamedSubscriptionUrl(origin, kind, token, title, extension) {
 	return `${origin}/subscribe/${kind}/${encodeURIComponent(token)}/${encodeURIComponent(`${title}.${extension}`)}`;
-}
-
-function addSubscriptionCacheParam(url) {
-	const params = new URLSearchParams({
-		t: Date.now().toString(36),
-	});
-	return `${url}?${params.toString()}`;
-}
-
-function buildClashInstallUrl(subscriptionUrl, title) {
-	const params = new URLSearchParams({
-		url: subscriptionUrl,
-		name: title,
-		type: "url",
-	});
-	return `clash://install-config?${params.toString()}`;
 }
 
 function renderGroups() {
@@ -903,12 +881,12 @@ function renderGroups() {
 			const members = group.members
 				.map((member) => member.displayName || member.node?.name || member.nodeId)
 				.join(" / ");
-			const subscriptionTitle = getSubscriptionTitle(group);
+			const projectTitle = getProjectTitle();
 			const v2raynUrl = buildNamedSubscriptionUrl(
 				origin,
 				"v2rayn",
 				group.subscriptionToken,
-				subscriptionTitle,
+				projectTitle,
 				"txt",
 			);
 			const v2raynNamedUrl = `${v2raynUrl}#remarks=${encodeURIComponent(group.name)}`;
@@ -916,11 +894,9 @@ function renderGroups() {
 				origin,
 				"clash",
 				group.subscriptionToken,
-				subscriptionTitle,
+				projectTitle,
 				"yaml",
 			);
-			const clashSubscriptionUrl = addSubscriptionCacheParam(clashUrl);
-			const clashInstallUrl = buildClashInstallUrl(clashSubscriptionUrl, subscriptionTitle);
 			const toggleLabel = group.enabled ? "已启用" : "未启用";
 			const trafficLabel = group.showTrafficInName ? "显示流量" : "隐藏流量";
 			const subscriptionControls = group.enabled
@@ -929,14 +905,12 @@ function renderGroups() {
 						<a href="${escapeHtml(v2raynNamedUrl)}" target="_blank" rel="noreferrer">v2rayN 订阅</a>
 						<button class="mini-button" type="button" data-action="copy-url" data-kind="v2rayN 链接" data-value="${escapeHtml(v2raynNamedUrl)}">复制链接</button>
 						<button class="mini-button icon-button" type="button" data-action="show-qr" data-kind="v2rayN 二维码" data-label="${escapeHtml(`${group.name} · v2rayN`)}" data-hint="使用客户端扫码导入当前分组的 v2rayN 订阅链接。" data-value="${escapeHtml(v2raynNamedUrl)}" title="显示 v2rayN 二维码" aria-label="显示 v2rayN 二维码">▦</button>
-						<a href="${escapeHtml(clashSubscriptionUrl)}" target="_blank" rel="noreferrer">Clash URL</a>
-						<button class="mini-button" type="button" data-action="copy-url" data-kind="Clash URL" data-value="${escapeHtml(clashSubscriptionUrl)}">复制链接</button>
-						<button class="mini-button" type="button" data-action="download-subscription-file" data-kind="Clash YAML" data-value="${escapeHtml(clashUrl)}" data-filename="${escapeHtml(`${subscriptionTitle}.yaml`)}">下载 YAML</button>
-						<a href="${escapeHtml(clashInstallUrl)}">Clash Mi 导入</a>
-						<button class="mini-button" type="button" data-action="copy-url" data-kind="Clash Mi 唤起链接" data-value="${escapeHtml(clashInstallUrl)}">复制唤起</button>
-						<button class="mini-button icon-button" type="button" data-action="show-qr" data-kind="Clash Mi 唤起二维码" data-label="${escapeHtml(`${subscriptionTitle} · Clash Mi`)}" data-hint="用系统相机或浏览器打开该二维码，走外部导入协议后客户端配置名会跟随品牌名。" data-value="${escapeHtml(clashInstallUrl)}" title="显示 Clash Mi 唤起二维码" aria-label="显示 Clash Mi 唤起二维码">▦</button>
+						<a href="${escapeHtml(clashUrl)}" target="_blank" rel="noreferrer">Clash 订阅</a>
+						<button class="mini-button" type="button" data-action="copy-url" data-kind="Clash 链接" data-value="${escapeHtml(clashUrl)}">复制链接</button>
+						<button class="mini-button" type="button" data-action="download-subscription-file" data-kind="Clash YAML" data-value="${escapeHtml(clashUrl)}" data-filename="${escapeHtml(`${projectTitle}.yaml`)}">下载 YAML</button>
+						<button class="mini-button icon-button" type="button" data-action="show-qr" data-kind="Clash 二维码" data-label="${escapeHtml(`${projectTitle} · Clash`)}" data-hint="使用客户端扫码导入当前 Clash 订阅链接。" data-value="${escapeHtml(clashUrl)}" title="显示 Clash 二维码" aria-label="显示 Clash 二维码">▦</button>
 					</div>
-					<div class="inline-note subscription-note">Clash URL 用于手动订阅；需要控制 Clash Mi 配置名时使用“Clash Mi 导入”。</div>
+					<div class="inline-note subscription-note">客户端显示名沿用项目默认名；如需修改客户端显示名，修改项目默认名后重新部署。</div>
 				`
 				: `
 					<div class="subscription-links is-disabled">

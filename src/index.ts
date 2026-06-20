@@ -103,26 +103,16 @@ function encodeDispositionFilename(value: string): string {
 		.replace(/%(7C|60|5E)/g, (match) => match.toLowerCase());
 }
 
-function buildSubscriptionTitle(
-	group: Pick<GroupRecord, "name" | "slug">,
-	settings?: AppSettings,
-): string {
-	const brand = settings?.brand?.trim();
-	return brand && brand !== DEFAULT_BRAND
-		? brand
-		: group.name.trim() || group.slug || "subscription";
+function buildSubscriptionTitle(): string {
+	return DEFAULT_BRAND;
 }
 
 function buildSubscriptionHeaders(
-	group: Pick<GroupRecord, "name" | "slug">,
 	format: "v2rayn" | "clash",
-	settings?: AppSettings,
 ): HeadersInit {
 	const extension = format === "clash" ? "yaml" : "txt";
-	const title = buildSubscriptionTitle(group, settings);
-	const usingCustomBrand = title === settings?.brand?.trim() && title !== DEFAULT_BRAND;
-	const fallbackFileBase =
-		(usingCustomBrand ? slugify(title) : group.slug || slugify(title)) || "subscription";
+	const title = buildSubscriptionTitle();
+	const fallbackFileBase = slugify(title) || "subscription";
 	const utf8FileName = `${title}.${extension}`;
 	const fallbackFileName = `${fallbackFileBase}.${extension}`;
 
@@ -306,11 +296,10 @@ export default {
 			if (!group || !group.enabled) {
 				return text("Subscription not found", { status: 404 });
 			}
-			const settings = await store.getSettings();
 			return text(buildV2rayNSubscription(group), {
 				headers: {
 					"content-type": "text/plain; charset=utf-8",
-					...buildSubscriptionHeaders(group, "v2rayn", settings),
+					...buildSubscriptionHeaders("v2rayn"),
 				},
 			});
 		}
@@ -323,11 +312,10 @@ export default {
 			if (!group || !group.enabled) {
 				return text("Subscription not found", { status: 404 });
 			}
-			const settings = await store.getSettings();
-			return text(buildClashSubscription(group, buildSubscriptionTitle(group, settings)), {
+			return text(buildClashSubscription(group, buildSubscriptionTitle()), {
 				headers: {
 					"content-type": "text/yaml; charset=utf-8",
-					...buildSubscriptionHeaders(group, "clash", settings),
+					...buildSubscriptionHeaders("clash"),
 				},
 			});
 		}
@@ -432,13 +420,7 @@ export default {
 			}
 
 			if (url.pathname === "/api/groups" && request.method === "GET") {
-				const [groups, settings] = await Promise.all([store.listGroups(), store.getSettings()]);
-				return json({
-					items: groups.map((group) => ({
-						...group,
-						subscriptionTitle: buildSubscriptionTitle(group, settings),
-					})),
-				});
+				return json({ items: await store.listGroups() });
 			}
 
 			if (url.pathname === "/api/groups" && request.method === "POST") {
