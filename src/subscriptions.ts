@@ -155,6 +155,7 @@ function renderClashProfileMetadata(profileName: string): string[] {
 
 export function buildClashSubscription(group: GroupWithMembers, profileName = group.name): string {
 	const members = group.members.filter((member) => member.node?.enabled);
+	const proxyGroupName = profileName.trim() || group.name;
 	const names = members.map((member) =>
 		yamlEscape(renderNodeName(group.name, member.node!, member.displayName, group.showTrafficInName)),
 	);
@@ -173,10 +174,10 @@ export function buildClashSubscription(group: GroupWithMembers, profileName = gr
 		`proxies:`,
 		...proxyLines,
 		`proxy-groups:`,
-		`  - name: ${yamlEscape(group.name)}`,
+		`  - name: ${yamlEscape(proxyGroupName)}`,
 		`    type: select`,
 		`    proxies: [${names.join(", ")}]`,
 		`rules:`,
-		`  - ${yamlEscape(`MATCH,${group.name}`)}`,
+		`  - ${yamlEscape(`MATCH,${proxyGroupName}`)}`,
 	].join("\n");
 }
