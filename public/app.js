@@ -864,6 +864,16 @@ function buildNamedSubscriptionUrl(origin, kind, token, title, extension) {
 	return `${origin}/subscribe/${kind}/${encodeURIComponent(token)}/${encodeURIComponent(`${title}.${extension}`)}`;
 }
 
+function addSubscriptionNameParams(url, title) {
+	const params = new URLSearchParams({
+		name: title,
+		"profile-name": title,
+		"cfw-name": title,
+		title,
+	});
+	return `${url}?${params.toString()}`;
+}
+
 function renderGroups() {
 	const origin = window.location.origin;
 	const groups = getFilteredGroups();
@@ -900,6 +910,7 @@ function renderGroups() {
 				subscriptionTitle,
 				"yaml",
 			);
+			const clashImportUrl = addSubscriptionNameParams(clashUrl, subscriptionTitle);
 			const toggleLabel = group.enabled ? "已启用" : "未启用";
 			const trafficLabel = group.showTrafficInName ? "显示流量" : "隐藏流量";
 			const subscriptionControls = group.enabled
@@ -908,10 +919,10 @@ function renderGroups() {
 						<a href="${escapeHtml(v2raynNamedUrl)}" target="_blank" rel="noreferrer">v2rayN 订阅</a>
 						<button class="mini-button" type="button" data-action="copy-url" data-kind="v2rayN 链接" data-value="${escapeHtml(v2raynNamedUrl)}">复制链接</button>
 						<button class="mini-button icon-button" type="button" data-action="show-qr" data-kind="v2rayN 二维码" data-label="${escapeHtml(`${group.name} · v2rayN`)}" data-hint="使用客户端扫码导入当前分组的 v2rayN 订阅链接。" data-value="${escapeHtml(v2raynNamedUrl)}" title="显示 v2rayN 二维码" aria-label="显示 v2rayN 二维码">▦</button>
-						<a href="${clashUrl}" target="_blank" rel="noreferrer">Clash 订阅</a>
-						<button class="mini-button" type="button" data-action="copy-url" data-kind="Clash 链接" data-value="${escapeHtml(clashUrl)}">复制链接</button>
+						<a href="${escapeHtml(clashImportUrl)}" target="_blank" rel="noreferrer">Clash 订阅</a>
+						<button class="mini-button" type="button" data-action="copy-url" data-kind="Clash 链接" data-value="${escapeHtml(clashImportUrl)}">复制链接</button>
 						<button class="mini-button" type="button" data-action="download-subscription-file" data-kind="Clash YAML" data-value="${escapeHtml(clashUrl)}" data-filename="${escapeHtml(`${subscriptionTitle}.yaml`)}">下载 YAML</button>
-						<button class="mini-button icon-button" type="button" data-action="show-qr" data-kind="Clash 二维码" data-label="${escapeHtml(`${group.name} · Clash`)}" data-hint="使用客户端扫码导入当前分组的 Clash 订阅链接。" data-value="${escapeHtml(clashUrl)}" title="显示 Clash 二维码" aria-label="显示 Clash 二维码">▦</button>
+						<button class="mini-button icon-button" type="button" data-action="show-qr" data-kind="Clash 二维码" data-label="${escapeHtml(`${group.name} · Clash`)}" data-hint="使用客户端扫码导入当前分组的 Clash 订阅链接。" data-value="${escapeHtml(clashImportUrl)}" title="显示 Clash 二维码" aria-label="显示 Clash 二维码">▦</button>
 					</div>
 					<div class="inline-note subscription-note">Clash Mi 的 URL 导入名不可控；需要自定义显示名时下载 YAML 后从文件导入。</div>
 				`
