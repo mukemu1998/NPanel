@@ -1617,6 +1617,7 @@ els.themeSaveButton.addEventListener("click", async () => {
 			body: JSON.stringify({ brand }),
 		});
 		applyPanelBrand(brand);
+		renderGroups();
 		closeThemeModal({ revert: false });
 		showToast("设置已应用");
 	} catch (error) {
