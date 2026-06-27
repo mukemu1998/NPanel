@@ -154,6 +154,7 @@ function normalizeNode(input: Partial<NodeRecord>): Partial<NodeRecord> {
 		enabled: Boolean(input.enabled ?? true),
 		protocol: (input.protocol ?? "vless-reality") as NodeRecord["protocol"],
 		transport: input.transport ?? "tcp",
+		wsPath: input.wsPath ?? "",
 		flow: input.flow ?? "xtls-rprx-vision",
 		trafficMode: (input.trafficMode ?? "manual") as NodeRecord["trafficMode"],
 		trafficQuotaGb: nullableNumber(input.trafficQuotaGb),

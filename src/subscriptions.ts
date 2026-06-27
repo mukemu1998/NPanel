@@ -8,6 +8,16 @@ function encodeName(name: string): string {
 	return encodeURIComponent(name);
 }
 
+function isWsTransport(node: NodeRecord): boolean {
+	return (node.transport || "").toLowerCase() === "ws";
+}
+
+function normalizeWsPath(path: string): string {
+	const value = path.trim();
+	if (!value) return "";
+	return value.startsWith("/") ? value : `/${value}`;
+}
+
 function formatTrafficBadge(node: NodeRecord): string {
 	if (node.trafficMode === "unlimited") {
 		return "不限流量";
@@ -50,21 +60,35 @@ function renderVlessRealityLink(node: NodeRecord, displayName: string): string {
 }
 
 function renderVlessLink(node: NodeRecord, displayName: string): string {
-	return [
+	const parts = [
 		`vless://${node.uuid}@${node.server}:${node.port}`,
 		`?encryption=none`,
 		`&security=tls`,
 		`&sni=${encodeURIComponent(node.sni)}`,
-		`&type=${encodeURIComponent(node.transport || "tcp")}#${encodeName(displayName)}`,
-	].join("");
+		`&type=${encodeURIComponent(node.transport || "tcp")}`,
+	];
+	if (isWsTransport(node)) {
+		const wsPath = normalizeWsPath(node.wsPath);
+		if (wsPath) parts.push(`&path=${encodeURIComponent(wsPath)}`);
+		parts.push(`&host=${encodeURIComponent(node.sni || node.server)}`);
+	}
+	parts.push(`#${encodeName(displayName)}`);
+	return parts.join("");
 }
 
 function renderTrojanLink(node: NodeRecord, displayName: string): string {
-	return [
+	const parts = [
 		`trojan://${encodeURIComponent(node.password)}@${node.server}:${node.port}`,
 		`?sni=${encodeURIComponent(node.sni)}`,
-		`&type=${encodeURIComponent(node.transport || "tcp")}#${encodeName(displayName)}`,
-	].join("");
+		`&type=${encodeURIComponent(node.transport || "tcp")}`,
+	];
+	if (isWsTransport(node)) {
+		const wsPath = normalizeWsPath(node.wsPath);
+		if (wsPath) parts.push(`&path=${encodeURIComponent(wsPath)}`);
+		parts.push(`&host=${encodeURIComponent(node.sni || node.server)}`);
+	}
+	parts.push(`#${encodeName(displayName)}`);
+	return parts.join("");
 }
 
 export function buildV2rayNSubscription(group: GroupWithMembers): string {
@@ -119,8 +143,17 @@ function renderClashProxy(node: NodeRecord, displayName: string): string[] {
 				`    server: ${node.server}`,
 				`    port: ${node.port}`,
 				`    password: ${yamlEscape(node.password)}`,
+				`    network: ${node.transport || "tcp"}`,
 				`    sni: ${yamlEscape(node.sni)}`,
 				`    udp: true`,
+				...(isWsTransport(node)
+					? [
+							`    ws-opts:`,
+							`      path: ${yamlEscape(normalizeWsPath(node.wsPath) || "/")}`,
+							`      headers:`,
+							`        Host: ${yamlEscape(node.sni || node.server)}`,
+						]
+					: []),
 			];
 		case "vless":
 			return [
@@ -133,6 +166,14 @@ function renderClashProxy(node: NodeRecord, displayName: string): string[] {
 				`    tls: true`,
 				`    servername: ${yamlEscape(node.sni)}`,
 				`    udp: true`,
+				...(isWsTransport(node)
+					? [
+							`    ws-opts:`,
+							`      path: ${yamlEscape(normalizeWsPath(node.wsPath) || "/")}`,
+							`      headers:`,
+							`        Host: ${yamlEscape(node.sni || node.server)}`,
+						]
+					: []),
 			];
 		default:
 			return [];

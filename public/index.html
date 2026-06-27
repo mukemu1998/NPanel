@@ -234,6 +234,10 @@
 												<input id="node-transport" value="tcp" />
 											</label>
 											<label class="field">
+												<span>WS Path</span>
+												<input id="node-ws-path" placeholder="渚嬪 /assets/ws-entry" />
+											</label>
+											<label class="field">
 												<span>流量模式</span>
 												<select id="node-traffic-mode">
 													<option value="manual">手动录入</option>
@@ -260,7 +264,7 @@
 											</label>
 											<label class="field">
 												<span>SNI</span>
-												<input id="node-sni" placeholder="例如 www.microsoft.com" />
+												<input id="node-sni" placeholder="例如 edge.example.com" />
 											</label>
 											<label class="field">
 												<span>Flow</span>
@@ -316,7 +320,7 @@
 										<input id="group-id" type="hidden" />
 										<div class="panel-subtitle">
 											<h3 id="group-form-title">新建分组</h3>
-											<p>建议把常用业务场景拆成多个分组，例如主用、备用、过香港中转等。</p>
+											<p>建议按用途拆成多个分组，例如主线、备用、区域中继或测试环境。</p>
 										</div>
 										<div class="form-grid two">
 											<label class="field">
@@ -325,7 +329,7 @@
 											</label>
 											<label class="field">
 												<span>Slug</span>
-												<input id="group-slug" required placeholder="例如 gemini-stable" />
+												<input id="group-slug" required placeholder="例如 stable-release" />
 											</label>
 											<label class="field">
 												<span>订阅 Token</span>

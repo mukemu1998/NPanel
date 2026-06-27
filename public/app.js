@@ -124,6 +124,7 @@ const els = {
 	nodeServer: document.querySelector("#node-server"),
 	nodePort: document.querySelector("#node-port"),
 	nodeTransport: document.querySelector("#node-transport"),
+	nodeWsPath: document.querySelector("#node-ws-path"),
 	nodeTrafficMode: document.querySelector("#node-traffic-mode"),
 	nodeUuid: document.querySelector("#node-uuid"),
 	nodePassword: document.querySelector("#node-password"),
@@ -526,9 +527,11 @@ function parseShareLinkLine(line, index) {
 		server: url.hostname,
 		port: Number(url.port || 443),
 		transport: url.searchParams.get("type") || "tcp",
+		wsPath: url.searchParams.get("path") || "",
 		enabled: true,
 		sni: url.searchParams.get("sni") || url.searchParams.get("peer") || url.searchParams.get("host") || "",
 		note: `Imported from ${rawProtocol} share link`,
+		...readImportedTraffic(Object.fromEntries(url.searchParams.entries())),
 	};
 
 	if (rawProtocol === "trojan") {
@@ -564,6 +567,83 @@ function parseShareLinkLine(line, index) {
 	};
 }
 
+function pickImportedValue(raw, keys) {
+	for (const key of keys) {
+		if (raw[key] !== undefined && raw[key] !== null && raw[key] !== "") {
+			return raw[key];
+		}
+	}
+	return null;
+}
+
+function normalizeTrafficMode(value) {
+	const raw = String(value || "").trim();
+	if (!raw) return "manual";
+	const normalized = raw.toLowerCase().replace(/[_\s]+/g, "-");
+	if (["unlimited", "self-report", "shared-report", "manual"].includes(normalized)) {
+		return normalized;
+	}
+	if (/不限|unlimited/.test(raw)) return "unlimited";
+	if (/共享|shared/.test(raw)) return "shared-report";
+	if (/上报|self/.test(raw)) return "self-report";
+	return "manual";
+}
+
+function parseTrafficNumber(value) {
+	if (value === null || value === undefined || value === "") return null;
+	const normalized = String(value).trim().replace(/gb$/i, "");
+	const number = Number(normalized);
+	return Number.isFinite(number) ? number : null;
+}
+
+function readImportedTraffic(raw) {
+	const trafficMode = normalizeTrafficMode(
+		pickImportedValue(raw, ["trafficMode", "traffic_mode", "traffic-mode", "流量模式"]),
+	);
+	const trafficQuotaGb = parseTrafficNumber(
+		pickImportedValue(raw, [
+			"trafficQuotaGb",
+			"traffic_quota_gb",
+			"traffic-quota-gb",
+			"quotaGb",
+			"quota",
+			"totalGb",
+			"total",
+			"总流量GB",
+			"总流量",
+		]),
+	);
+	const trafficUsedGb = parseTrafficNumber(
+		pickImportedValue(raw, [
+			"trafficUsedGb",
+			"traffic_used_gb",
+			"traffic-used-gb",
+			"usedGb",
+			"used",
+			"已用流量GB",
+			"已用流量",
+		]),
+	);
+	const trafficResetDay = parseTrafficNumber(
+		pickImportedValue(raw, [
+			"trafficResetDay",
+			"traffic_reset_day",
+			"traffic-reset-day",
+			"resetDay",
+			"reset",
+			"重置日",
+			"流量重置日",
+		]),
+	);
+	return {
+		trafficMode,
+		trafficQuotaGb,
+		trafficUsedGb,
+		trafficResetDay,
+		trafficUpdatedAt: pickImportedValue(raw, ["trafficUpdatedAt", "traffic_updated_at", "traffic-updated-at"]) || null,
+	};
+}
+
 function normalizeImportedNode(raw, source = "config") {
 	const server = raw.server || raw.address || raw.add || raw.host || raw.hostname || "";
 	const port = Number(raw.port || raw.server_port || raw.remotePort || 443);
@@ -586,6 +666,15 @@ function normalizeImportedNode(raw, source = "config") {
 		server,
 		port: Number.isFinite(port) ? port : 443,
 		transport: raw.transport || raw.network || raw.type || "tcp",
+		wsPath:
+			raw.wsPath ||
+			raw.ws_path ||
+			raw["ws-path"] ||
+			raw.path ||
+			raw.serviceName ||
+			raw.wsSettings?.path ||
+			raw.streamSettings?.wsSettings?.path ||
+			"",
 		enabled: raw.enabled !== false,
 		uuid: raw.uuid || raw.id || raw.userId || "",
 		password: raw.password || raw.pass || "",
@@ -594,6 +683,7 @@ function normalizeImportedNode(raw, source = "config") {
 		sni: raw.sni || raw.serverName || raw.host || raw.peer || "",
 		flow: flow || (protocol === "vless-reality" ? "xtls-rprx-vision" : ""),
 		note: raw.note || raw.description || `Imported from ${source}`,
+		...readImportedTraffic(raw),
 	};
 }
 
@@ -626,6 +716,7 @@ function parseJsonImport(input) {
 							shortId: item.streamSettings?.realitySettings?.shortId,
 							sni: item.streamSettings?.realitySettings?.serverName || item.streamSettings?.tlsSettings?.serverName,
 							transport: item.streamSettings?.network,
+							wsPath: item.streamSettings?.wsSettings?.path,
 						},
 						"json config",
 					),
@@ -644,6 +735,7 @@ function parseJsonImport(input) {
 							password: serverItem.password,
 							sni: item.streamSettings?.tlsSettings?.serverName || serverItem.sni,
 							transport: item.streamSettings?.network,
+							wsPath: item.streamSettings?.wsSettings?.path,
 						},
 						"json config",
 					),
@@ -676,7 +768,13 @@ function parseKeyValueImport(input) {
 		transport: ["transport", "network", "type transport", "传输", "传输层"],
 		security: ["security", "tls", "streamsecurity", "加密"],
 		note: ["note", "description", "备注", "说明"],
+		trafficMode: ["traffic mode", "trafficmode", "traffic_mode", "流量模式"],
+		trafficQuotaGb: ["traffic quota gb", "trafficquotagb", "traffic_quota_gb", "quota gb", "quotagb", "total gb", "totalgb", "总流量gb", "总流量"],
+		trafficUsedGb: ["traffic used gb", "trafficusedgb", "traffic_used_gb", "used gb", "usedgb", "已用流量gb", "已用流量"],
+		trafficResetDay: ["traffic reset day", "trafficresetday", "traffic_reset_day", "reset day", "resetday", "重置日", "流量重置日"],
+		trafficUpdatedAt: ["traffic updated at", "trafficupdatedat", "traffic_updated_at", "流量更新时间"],
 	};
+	aliases.wsPath = ["ws path", "wspath", "ws_path", "ws-path", "path", "websocket path"];
 	const normalizedAliases = Object.fromEntries(
 		Object.entries(aliases).map(([key, values]) => [
 			key,
@@ -1239,6 +1337,7 @@ function fillNodeForm(node, mode = node?.id ? "edit" : "create") {
 	els.nodeServer.value = node?.server || "";
 	els.nodePort.value = String(node?.port ?? 443);
 	els.nodeTransport.value = node?.transport || "tcp";
+	els.nodeWsPath.value = node?.wsPath || "";
 	els.nodeTrafficMode.value = node?.trafficMode || "manual";
 	els.nodeUuid.value = node?.uuid || "";
 	els.nodePassword.value = node?.password || "";
@@ -1294,6 +1393,7 @@ function getNodeFormPayload() {
 		server: els.nodeServer.value.trim(),
 		port: Number(els.nodePort.value || 443),
 		transport: els.nodeTransport.value.trim() || "tcp",
+		wsPath: els.nodeWsPath.value.trim(),
 		enabled: state.nodes.find((item) => item.id === els.nodeId.value)?.enabled ?? true,
 		trafficMode: els.nodeTrafficMode.value,
 		uuid: els.nodeUuid.value.trim(),
@@ -1323,6 +1423,9 @@ function validateNodePayload(payload) {
 	if (payload.protocol === "vless") {
 		if (!payload.uuid) errors.push("VLESS 节点需要 UUID");
 		if (!payload.sni) errors.push("VLESS 节点需要 SNI");
+	}
+	if (payload.protocol === "vless" && String(payload.transport || "").toLowerCase() === "ws" && !payload.wsPath) {
+		errors.push("VLESS WebSocket 节点需要 WS Path");
 	}
 	if (payload.protocol === "trojan") {
 		if (!payload.password) errors.push("Trojan 节点需要密码");

@@ -1,62 +1,32 @@
-# 更新日志
+# Changelog
 
-本文用于记录 `NPanel` 的重要功能调整、文档整理、安全更新和发布相关改动。
+All notable changes to `NPanel` will be documented in this file.
 
-建议后续写法：
+The format is intentionally lightweight and focused on changes that affect usage, deployment, or repository structure.
 
-- 每次推送完成后补一条
-- 先写日期，再写本次改动主题
-- 只记录对使用、部署、维护有价值的变化
+## Unreleased
 
----
+### Changed
+
+- Simplified the repository documentation structure for a cleaner open source layout
+- Kept only the core project documents: `README.md`, deployment guide, changelog, and license
+- Moved quick-start, repository overview, and open-source boundary notes into `README.md`
+- Reduced deployment notes to the essential Cloudflare Workers + D1 workflow
 
 ## 0.1.0 - 2026-06-18
 
-### 首个稳定维护版本
+### Added
 
-- 正式从整理期进入可持续维护阶段
-- 完成开源仓库拆分、命名清理与说明文档重建
-- 完成部署文档、维护文档、检查清单、备忘单、版本规则、更新日志等基础资料
-- 完成安全依赖升级、审计清零、测试通过与类型检查通过
-- 确立后续按 `0.x.y` 迭代的版本管理方式
+- Initial open source repository split for `NPanel`
+- Cloudflare Workers worker, front-end panel, D1 schema, and regression tests
+- Subscription export for `v2rayN` and Clash clients
+- Local `mock` storage fallback and local D1 development workflow
 
----
+### Changed
 
-## 2026-06-18
+- Cleaned repository naming and removed non-public project content
+- Added public demo data, screenshots, and deployment-oriented project documentation
 
-### 文档与维护流程整理
+### Security
 
-- 新增 `QUICK_WORKFLOW.md`，汇总最常用的更新、联调、部署顺序
-- 重写 `MAINTENANCE.md`，统一日常维护、依赖升级和回退思路
-- 重写 `PUSH_CHECKLIST.md`，统一发布前检查项
-- 在 `README.md` 中补充文档入口，方便直接定位维护资料
-
-### 开源仓库清理
-
-- 清理旧项目命名兼容残留
-- 保持开源仓库仅使用 `NPanel` 命名
-
-### 安全与依赖
-
-- 升级 `wrangler`
-- 升级 `vitest`
-- 升级 `@cloudflare/vitest-pool-workers`
-- 增加 `esbuild` 与 `ws` 的安全覆盖版本
-- 完成审计清零，并通过测试与类型检查
-
-### 开源发布整理
-
-- 补充中文说明文档
-- 使用面板真实界面截图替换示意图
-- 补齐部署、维护、FAQ、检查清单等文档结构
-
----
-
-## 2026-06-17
-
-### 首个开源版本整理
-
-- 将开源仓库从业务上线仓库中拆分出来
-- 调整项目命名为 `NPanel`
-- 清理私人信息、示例外的敏感内容和无关文件
-- 整理 README、部署说明、FAQ、维护文档的基础结构
+- Updated key dependencies and pinned vulnerable transitive packages via `overrides`

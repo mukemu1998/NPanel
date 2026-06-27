@@ -51,6 +51,6 @@ curl -fsS \
   "${PANEL_BASE_URL}/api/nodes/${NODE_ID}/traffic" \
   --data "${PAYLOAD}"
 
-# Cron example (run at 06:00 every day in Beijing time):
-# CRON_TZ=Asia/Shanghai
+# Cron example (run at 06:00 every day in your billing timezone):
+# CRON_TZ=UTC
 # 0 6 * * * /usr/local/bin/report-node-traffic.sh >> /var/log/npanel-traffic.log 2>&1

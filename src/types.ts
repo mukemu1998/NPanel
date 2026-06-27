@@ -9,6 +9,7 @@ export interface NodeRecord {
 	port: number;
 	enabled: boolean;
 	transport: string;
+	wsPath: string;
 	uuid: string;
 	password: string;
 	publicKey: string;

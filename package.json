@@ -1,7 +1,25 @@
 {
   "name": "npanel",
   "version": "0.1.0",
+  "description": "Self-hosted node and subscription management panel built on Cloudflare Workers and D1.",
   "private": true,
+  "license": "MIT",
+  "homepage": "https://github.com/mukemu1998/NPanel#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mukemu1998/NPanel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mukemu1998/NPanel/issues"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "d1",
+    "subscription",
+    "proxy-panel",
+    "v2rayn",
+    "clash"
+  ],
   "engines": {
     "node": ">=22"
   },

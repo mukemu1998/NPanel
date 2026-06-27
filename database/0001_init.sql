@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS nodes (
   port INTEGER NOT NULL,
   enabled INTEGER NOT NULL DEFAULT 1,
   transport TEXT NOT NULL DEFAULT 'tcp',
+  ws_path TEXT NOT NULL DEFAULT '',
   uuid TEXT NOT NULL DEFAULT '',
   password TEXT NOT NULL DEFAULT '',
   public_key TEXT NOT NULL DEFAULT '',

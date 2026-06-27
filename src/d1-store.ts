@@ -19,6 +19,7 @@ const toNode = (row: Record<string, unknown>): NodeRecord => ({
 	port: Number(row.port),
 	enabled: Boolean(row.enabled),
 	transport: String(row.transport),
+	wsPath: String(row.ws_path ?? ""),
 	uuid: String(row.uuid ?? ""),
 	password: String(row.password ?? ""),
 	publicKey: String(row.public_key ?? ""),
@@ -148,6 +149,7 @@ export function createD1Store(db: D1Database): AppStore {
 				port: Number(input.port ?? 443),
 				enabled: input.enabled ? 1 : 0,
 				transport: input.transport ?? "tcp",
+				ws_path: input.wsPath ?? "",
 				uuid: input.uuid ?? "",
 				password: input.password ?? "",
 				public_key: input.publicKey ?? "",
@@ -166,11 +168,11 @@ export function createD1Store(db: D1Database): AppStore {
 			await db
 				.prepare(
 					`INSERT INTO nodes (
-						id, name, protocol, server, port, enabled, transport, uuid, password,
+						id, name, protocol, server, port, enabled, transport, ws_path, uuid, password,
 						public_key, short_id, sni, flow, note,
 						traffic_mode, traffic_quota_gb, traffic_used_gb, traffic_reset_day, traffic_updated_at,
 						created_at, updated_at
-					) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+					) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 					ON CONFLICT(id) DO UPDATE SET
 						name=excluded.name,
 						protocol=excluded.protocol,
@@ -178,6 +180,7 @@ export function createD1Store(db: D1Database): AppStore {
 						port=excluded.port,
 						enabled=excluded.enabled,
 						transport=excluded.transport,
+						ws_path=excluded.ws_path,
 						uuid=excluded.uuid,
 						password=excluded.password,
 						public_key=excluded.public_key,
@@ -200,6 +203,7 @@ export function createD1Store(db: D1Database): AppStore {
 					row.port,
 					row.enabled,
 					row.transport,
+					row.ws_path,
 					row.uuid,
 					row.password,
 					row.public_key,
@@ -243,6 +247,7 @@ export function createD1Store(db: D1Database): AppStore {
 						n.port,
 						n.enabled,
 						n.transport,
+						n.ws_path,
 						n.uuid,
 						n.password,
 						n.public_key,
@@ -354,6 +359,7 @@ export function createD1Store(db: D1Database): AppStore {
 						n.port,
 						n.enabled,
 						n.transport,
+						n.ws_path,
 						n.uuid,
 						n.password,
 						n.public_key,

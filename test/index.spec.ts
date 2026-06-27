@@ -8,6 +8,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import worker from "../src";
 import schemaSql from "../database/0001_init.sql?raw";
 import seedSql from "../database/0002_seed_demo.sql?raw";
+import { buildClashSubscription, buildV2rayNSubscription } from "../src/subscriptions";
 
 function splitSqlStatements(sql: string): string[] {
 	return sql
@@ -153,7 +154,7 @@ describe("NPanel worker", () => {
 		});
 
 		const response = await SELF.fetch(
-			"http://example.com/subscribe/clash/demo-gemini-group/Example%20Panel.yaml",
+			"http://example.com/subscribe/clash/demo-starter-group/Example%20Panel.yaml",
 		);
 		expect(response.status).toBe(200);
 		expect(response.headers.get("profile-title")).toBe("base64:RXhhbXBsZSBQYW5lbA==");
@@ -237,7 +238,7 @@ describe("NPanel worker", () => {
 
 	it("serves public v2rayN subscription with custom title headers", async () => {
 		const response = await SELF.fetch(
-			"http://example.com/subscribe/v2rayn/demo-gemini-group/Gemini.txt",
+			"http://example.com/subscribe/v2rayn/demo-starter-group/Starter.txt",
 		);
 		expect(response.status).toBe(200);
 		expect(response.headers.get("profile-title")).toBe("base64:TlBhbmVs");
@@ -250,15 +251,70 @@ describe("NPanel worker", () => {
 
 	it("serves clash subscription with custom title headers", async () => {
 		const response = await SELF.fetch(
-			"http://example.com/subscribe/clash/demo-gemini-group/Gemini.yaml",
+			"http://example.com/subscribe/clash/demo-starter-group/Starter.yaml",
 		);
 		expect(response.status).toBe(200);
 		expect(response.headers.get("profile-title")).toBe("base64:TlBhbmVs");
 		expect(response.headers.get("content-disposition")).toContain('filename="npanel.yaml"');
 		const text = await response.text();
-		expect(text).toContain("US-Gemini-via-HK");
-		expect(text).toContain("US-Gemini-Reality");
+		expect(text).toContain("Primary-Relay");
+		expect(text).toContain("Primary-Direct");
 		expect(text).toContain("共享流量");
+	});
+
+	it("renders websocket path in v2rayN and Clash subscriptions", async () => {
+		const group = {
+			id: "group-ws",
+			name: "WS Group",
+			slug: "ws-group",
+			enabled: true,
+			subscriptionToken: "ws-group-token",
+			showTrafficInName: false,
+			createdAt: "2026-06-25T00:00:00.000Z",
+			updatedAt: "2026-06-25T00:00:00.000Z",
+			members: [
+				{
+					groupId: "group-ws",
+					nodeId: "node-ws",
+					displayName: "WS Node",
+					sortOrder: 10,
+					node: {
+						id: "node-ws",
+						name: "WS Node",
+						protocol: "vless" as const,
+						server: "edge.example.com",
+						port: 443,
+						enabled: true,
+						transport: "ws",
+						wsPath: "/assets/ws-entry",
+						uuid: "33333333-3333-3333-3333-333333333333",
+						password: "",
+						publicKey: "",
+						shortId: "",
+						sni: "edge.example.com",
+						flow: "",
+						note: "",
+						trafficMode: "manual" as const,
+						trafficQuotaGb: null,
+						trafficUsedGb: null,
+						trafficResetDay: null,
+						trafficUpdatedAt: null,
+						createdAt: "2026-06-25T00:00:00.000Z",
+						updatedAt: "2026-06-25T00:00:00.000Z",
+					},
+				},
+			],
+		};
+		const v2raynText = Buffer.from(buildV2rayNSubscription(group), "base64").toString("utf8");
+		expect(v2raynText).toContain("type=ws");
+		expect(v2raynText).toContain("path=%2Fassets%2Fws-entry");
+		expect(v2raynText).toContain("host=edge.example.com");
+
+		const clashText = buildClashSubscription(group, "WS Profile");
+		expect(clashText).toContain("network: ws");
+		expect(clashText).toContain("ws-opts:");
+		expect(clashText).toContain("path: '/assets/ws-entry'");
+		expect(clashText).toContain("Host: 'edge.example.com'");
 	});
 
 	it("serves authenticated subscription qr svg", async () => {
@@ -272,7 +328,7 @@ describe("NPanel worker", () => {
 		const cookie = loginResponse.headers.get("set-cookie")!.split(";")[0];
 
 		const response = await SELF.fetch(
-			"http://127.0.0.1/api/qr?text=https%3A%2F%2Fexample.com%2Fsubscribe%2Fclash%2Fdemo&label=Gemini%20Clash",
+			"http://127.0.0.1/api/qr?text=https%3A%2F%2Fexample.com%2Fsubscribe%2Fclash%2Fdemo&label=Starter%20Clash",
 			{
 				headers: { cookie },
 			},
@@ -328,7 +384,7 @@ describe("NPanel worker", () => {
 				members: [
 					{
 						nodeId: node.id,
-						displayName: "HK Single Node",
+						displayName: "Relay Single Node",
 						sortOrder: 10,
 					},
 				],
@@ -347,7 +403,7 @@ describe("NPanel worker", () => {
 	});
 
 	it("accepts traffic reports with the report secret", async () => {
-		const request = new Request("http://127.0.0.1/api/nodes/node-us-reality/traffic", {
+		const request = new Request("http://127.0.0.1/api/nodes/node-primary-direct/traffic", {
 			method: "POST",
 			headers: {
 				"content-type": "application/json",

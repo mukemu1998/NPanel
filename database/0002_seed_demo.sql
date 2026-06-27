@@ -10,8 +10,8 @@ INSERT INTO nodes (
 	created_at, updated_at
 ) VALUES
 (
-	'node-us-reality',
-	'US Reality',
+	'node-primary-direct',
+	'Primary Direct',
 	'vless-reality',
 	'203.0.113.10',
 	443,
@@ -21,9 +21,9 @@ INSERT INTO nodes (
 	'',
 	'examplePublicKeyReplaceMe',
 	'abcdef0123456789',
-	'www.microsoft.com',
+	'edge.example.com',
 	'xtls-rprx-vision',
-	'Demo direct US node',
+	'Demo primary direct node',
 	'self-report',
 	2048,
 	11.12,
@@ -33,8 +33,8 @@ INSERT INTO nodes (
 	'2026-06-16T00:00:00.000Z'
 ),
 (
-	'node-us-via-hk',
-	'US via HK',
+	'node-primary-relay',
+	'Primary Relay',
 	'vless-reality',
 	'198.51.100.20',
 	24443,
@@ -44,9 +44,9 @@ INSERT INTO nodes (
 	'',
 	'examplePublicKeyReplaceMe',
 	'abcdef0123456789',
-	'www.microsoft.com',
+	'edge.example.com',
 	'xtls-rprx-vision',
-	'Demo HK relay to US',
+	'Demo relay node',
 	'shared-report',
 	2048,
 	11.12,
@@ -60,11 +60,11 @@ INSERT INTO groups (
 	id, name, slug, enabled, subscription_token, show_traffic_in_name, created_at, updated_at
 ) VALUES
 (
-	'group-gemini',
-	'Gemini',
-	'gemini',
+	'group-starter',
+	'Starter',
+	'starter',
 	1,
-	'demo-gemini-group',
+	'demo-starter-group',
 	1,
 	'2026-06-16T00:00:00.000Z',
 	'2026-06-16T00:00:00.000Z'
@@ -74,14 +74,14 @@ INSERT INTO group_nodes (
 	group_id, node_id, display_name, sort_order
 ) VALUES
 (
-	'group-gemini',
-	'node-us-reality',
-	'US-Gemini-Reality',
+	'group-starter',
+	'node-primary-direct',
+	'Primary-Direct',
 	10
 ),
 (
-	'group-gemini',
-	'node-us-via-hk',
-	'US-Gemini-via-HK',
+	'group-starter',
+	'node-primary-relay',
+	'Primary-Relay',
 	20
 );
